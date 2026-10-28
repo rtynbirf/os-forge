@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  OS-FORGE v0.1 — шаблон autounattend (заполняет inject.ps1, руками не править).
+  ЗАКОН ОПАСНОГО ПУНКТА: эта установка СТИРАЕТ ДИСК 0 ЦЕЛИКОМ (WillWipeDisk=true).
+  Запускающий осознанно активирует установку — предупреждение здесь обязано жить.
+  Альтернатива (пассивная): в <DiskConfiguration> поставь
+  <WillShowUI>Always</WillShowUI> — установщик спросит про диск сам.
+-->
+<unattend xmlns="urn:schemas-microsoft-com:unattend">
+  <settings pass="windowsPE">
+    <component name="Microsoft-Windows-International-Core-WinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+      <SetupUILanguage><UILanguage>ru-RU</UILanguage></SetupUILanguage>
+      <InputLocale>0419:00000419;0409:00000409</InputLocale>
+      <SystemLocale>ru-RU</SystemLocale>
+      <UILanguage>ru-RU</UILanguage>
+      <UserLocale>{{LOCALE}}</UserLocale>
+    </component>
+    <component name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+      <DiskConfiguration>
+        <WillShowUI>OnError</WillShowUI>
+        <Disk wcm:action="add">
+          <DiskID>0</DiskID>
+          <WillWipeDisk>true</WillWipeDisk>
+          <!-- ПОЧЕМУ ТАК: UEFI+GPT — карта современных машин; EFI 100МБ (FAT32),
+               MSR 16МБ, остальное — Windows. Для legacy-BIOS/MBR — отдельный
+               пункт v0.2 (активируется осознанно). -->
+          <CreatePartitions>
+            <CreatePartition wcm:action="add"><Order>1</Order><Type>EFI</Type><Size>100</Size></CreatePartition>
+            <CreatePartition wcm:action="add"><Order>2</Order><Type>MSR</Type><Size>16</Size></CreatePartition>
+            <CreatePartition wcm:action="add"><Order>3</Order><Type>Primary</Type><Extend>true</Extend></CreatePartition>
+          </CreatePartitions>
+          <ModifyPartitions>
+            <ModifyPartition wcm:action="add"><Order>1</Order><PartitionID>1</PartitionID><Format>FAT32</Format><Label>System</Label></ModifyPartition>
+            <ModifyPartition wcm:action="add"><Order>2</Order><PartitionID>3</PartitionID><Format>NTFS</Format><Label>Windows</Label><Letter>C</Letter></ModifyPartition>
+          </ModifyPartitions>
+        </Disk>
+      </DiskConfiguration>
+      <ImageInstall>
+        <OSImage>
+          <InstallFrom>
+            <MetaData wcm:action="add"><Key>/IMAGE/NAME</Key><Value>{{IMAGE_NAME}}</Value></MetaData>
+          </InstallFrom>
+          <InstallTo><DiskID>0</DiskID><PartitionID>3</PartitionID></InstallTo>
+          <WillShowUI>OnError</WillShowUI>
+        </OSImage>
+      </ImageInstall>
+      <UserData>
+        <AcceptEula>true</AcceptEula>
+        <FullName>OSFORGE</FullName>
+        <Organization>RUVSON</Organization>
+        <!-- Ключ пустой: установка без ключа допустима. Активация — твоё решение
+             (пункт install-key в каталоге ПАССИВЕН по закону). -->
+        <ProductKey><Key></Key></ProductKey>
+      </UserData>
+    </component>
+  </settings>
+  <settings pass="offlineServicing">
+    <component name="Microsoft-Windows-PnpCustomizationsNonWinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+      <DriverPaths>
+        <PathAndCredentials wcm:action="add" wcm:keyValue="1"><Path>\Драйверы</Path></PathAndCredentials>
+      </DriverPaths>
+    </component>
+  </settings>
+  <settings pass="oobeSystem">
+    <component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+      <InputLocale>0419:00000419;0409:00000409</InputLocale>
+      <SystemLocale>ru-RU</SystemLocale>
+      <UILanguage>ru-RU</UILanguage>
+      <UserLocale>{{LOCALE}}</UserLocale>
+    </component>
+    <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+      <UserAccounts>
+        <LocalAccounts>
+          <LocalAccount wcm:action="add">
+            <Name>{{LOCAL_USER}}</Name>
+            <DisplayName>{{LOCAL_USER}}</DisplayName>
+            <Group>Administrators</Group>
+            <Password><Value>{{LOCAL_PASS}}</Value><PlainText>true</PlainText></Password>
+          </LocalAccount>
+        </LocalAccounts>
+      </UserAccounts>
+      <OOBE>
+        <HideEULAPage>true</HideEULAPage>
+        <HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
+        <HideOnlineAccountScreens>true</HideOnlineAccountScreens>
+        <HideWirelessSetupInOOBE>false</HideWirelessSetupInOOBE>
+        <ProtectYourPC>3</ProtectYourPC>
+      </OOBE>
+      <FirstLogonCommands>
+      <!--TUNING-->
+      </FirstLogonCommands>
+    </component>
+  </settings>
+</unattend>

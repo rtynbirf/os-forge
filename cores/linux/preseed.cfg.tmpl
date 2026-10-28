@@ -1,0 +1,60 @@
+# ================================================================
+# OS-FORGE v0.1 — шаблон preseed.cfg (заполняет запуск.sh по КАРТЕ,
+# руками не править; правь каталог пунктов).
+# ЗАКОН ОПАСНОГО ПУНКТА: разметка ниже использует ВЕСЬ ДИСК целиком
+# (atomic). Это честно названо. Альтернативы — рядом, пассивны.
+# ================================================================
+d-i debian-installer/locale string {{LOCALE}}
+d-i keyboard-configuration/xkb-keymap select ru
+d-i keyboard-configuration/toggle select Alt+Shift
+
+d-i netcfg/choose_interface select auto
+d-i netcfg/get_hostname string osforge
+d-i netcfg/get_domain string local
+
+# ПОЧЕМУ ТАК: официальный cdimage-образ уже содержит несвободные прошивки
+# (с Debian 12) — это отдельная настройка-подтверждение.
+d-i apt-setup/non-free-firmware boolean true
+d-i apt-setup/non-free boolean true
+d-i apt-setup/contrib boolean true
+
+d-i clock-setup/utc boolean true
+d-i time/zone string Europe/Moscow
+
+# ---------- РАЗМЕТКА: ОПАСНЫЙ ПУНКТ ----------
+# АКТИВНО: весь диск целиком (atomic). СТЁТ ВСЁ на диске цели!
+# Альтернатива (пассивная): раскомментируй biggest_free и закомментируй
+# две строки atomic ниже — установщик влезет в свободное место.
+d-i partman-auto/method string regular
+d-i partman-auto/disk string /dev/sda
+d-i partman-auto/choose_recipe select atomic
+# d-i partman-auto/method string biggest_free
+# d-i partman-auto/init_automatically_peer select biggest_free
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+
+# ---------- Учётные записи ----------
+# ПОЧЕМУ ТАК: root заблокирован (пустой пароль), вход только через sudo —
+# безопаснее; пункт root-password в каталоге документирует включение root.
+d-i passwd/root-password password
+d-i passwd/root-password-again password
+d-i passwd/user-fullname string OSFORGE {{LOCAL_USER}}
+d-i passwd/username string {{LOCAL_USER}}
+d-i passwd/user-password password {{LOCAL_PASS}}
+d-i passwd/user-password-again password {{LOCAL_PASS}}
+d-i user-setup/allow-password-weak boolean true
+
+# ---------- Задачи: база без стола (пункт xfce — в каталоге, пассивен) ----------
+tasksel tasksel/first multiselect standard
+d-i pkgsel/upgrade select full-autoupgrade
+
+# ---------- Пакеты из активных пунктов каталога + прошивки по карте ----------
+d-i preseed/late_command string in-target apt-get -y install {{PACKAGES}}{{WIFI_EXTRA}} ; in-target update-ca-certificates
+
+d-i grub-installer/only_debian boolean true
+d-i grub-installer/with_other_os boolean true
+d-i finish-install/keep-consoles boolean false
+d-i finish-install/reboot_in_progress note
+d-i debian-installer/exit/poweroff boolean false

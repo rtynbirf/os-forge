@@ -1,0 +1,30 @@
+# ============================================================
+# КАТАЛОГ ПУНКТОВ: 02 — ПРОШИВКИ/ДРАЙВЕРЫ LINUX (класс=drivers-linux)
+# ============================================================
+
+# ── МЕХАНИКА ────────────────────────────────────────────────
+# ПОЧЕМУ ТАК: с Debian 12 официальные установочные образы cdimage.debian.org
+#   уже содержат несвободные прошивки. Пункты ниже добавляют паки прошивок
+#   в устанавливаемую систему (late_command), выбранные ПО КАРТЕ железа.
+
+# ── ПУНКТ: общий пакет прошивок ────────────────────────────
+# ПОЧЕМУ ТОЛЬКО ТАК: firmware-linux-nonfree покрывает большинство GPU/сети;
+#   это мета-пак — его версии следуют за релизом, хардкодить версии запрещено.
+# ПО ДРУГОМУ НЕТ: ручная охота за отдельными .deb по зеркалам ломает
+#   воспроизводимость.
+ACTIVE|firmware-base|class=drivers-linux|firmware-linux-nonfree|ставится в целевую систему всегда
+
+# ── ПУНКТ: прошивки Intel Wi-Fi (по карте: WIFI содержит Intel) ──
+ACTIVE|firmware-iwlwifi|class=drivers-linux,if=wifi-intel|firmware-iwlwifi|карта увидела Intel-беспроводник
+# PASS|firmware-iwlwifi|class=drivers-linux|firmware-iwlwifi|пассивен по умолчанию: сборщик сам активирует его, если КАРТА показала Intel Wi-Fi
+
+# ── ПУНКТ: прошивки Realtek ────────────────────────────────
+ACTIVE|firmware-realtek|class=drivers-linux,if=net-realtek|firmware-realtek|карта увидела Realtek-сеть
+# PASS|firmware-realtek|class=drivers-linux|firmware-realtek|то же: активируется сборщиком по карте
+
+# ── ПУНКТ: прошивки Atheros ────────────────────────────────
+ACTIVE|firmware-atheros|class=drivers-linux,if=wifi-atheros|firmware-atheros|карта увидела Atheros-беспроводник
+# PASS|firmware-atheros|class=drivers-linux|firmware-atheros|активируется сборщиком по карте
+
+# ── ПУНКТ: проприетарный NVIDIA (Linux) ────────────────────
+# PASS|nvidia-proprietary|class=drivers-linux|nvidia-driver|ПОЧЕМУ ПАССИВЕН: тянет неподписанный сторонний репозиторий; nouveau (инбокс) покрывает базу. Активируй осознанно, если нужен CUDA/игры — и зафиксируй источник сам (закон пунктов).
