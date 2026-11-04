@@ -22,6 +22,23 @@ function Log([string]$m) { Write-Host ("[ЯДРО/INJECT] " + $m) }
 
 if (-not (Test-Path $IsoPath)) { throw "ОТКАЗ: нет образа $IsoPath" }
 if (-not (Test-Path $TmplPath)) { throw "ОТКАЗ: нет шаблона ответов $TmplPath" }
+
+# --- 0. Локальный пароль: случайный на сборку, бутстрэп-only ----------
+# ПОЧЕМУ ТАК: пароль учётки неизбежно лежит в autounattend.xml плейнтекстом
+# (<PlainText>true</PlainText> — ограничение формата, обойти нельзя). Модель:
+# пусто -> случайный на КАЖДУЮ сборку (никаких переиспользуемых статичных
+# паролей из рук оператора); впечённое значение — бутстрэп-only: первая
+# команда первого входа (OSFORGE:rotate-pass, Order 1 в шаблоне) заменяет его.
+# Значение НИКОГДА не пишется в журнал/манифест — только факт и модель.
+if ([string]::IsNullOrWhiteSpace($LocalPass)) {
+  $LocalPass = [guid]::NewGuid().ToString('N').Substring(0, 20) + '!Aa1'
+  $passwordModel = 'random-per-build + first-logon rotation (bootstrap only)'
+  Log 'пароль: сгенерирован случайно для этой сборки (значение не логируется)'
+} else {
+  $passwordModel = 'operator-supplied + first-logon rotation (bootstrap only)'
+  Log 'пароль: предоставлен оператором (значение не логируется)'
+}
+Log 'пароль: впечённое в ISO значение — бутстрэп-only, при первом входе заменяется командой OSFORGE:rotate-pass.'
 New-Item -ItemType Directory -Force -Path $WorkDir | Out-Null
 $media = Join-Path $WorkDir 'media'
 if (Test-Path $media) { Remove-Item $media -Recurse -Force }
@@ -44,7 +61,10 @@ try {
 # --- 2. Пункты тюнинга из каталога -> FirstLogonCommands ------------
 Log 'Читаю АКТИВНЫЕ пункты тюнинга из каталога...'
 $cmdsXml = New-Object System.Collections.Generic.List[string]
-$order = 1
+# Order 1 уже занят в шаблоне статичной командой OSFORGE:rotate-pass
+# (ротация бутстрэп-пароля при первом входе) — тюнинг нумеруется со 2:
+# порядок номеров = порядок исполнения, дубли и дыры запрещены.
+$order = 2
 Get-ChildItem -Path $CatalogDir -Filter '*.txt' -ErrorAction SilentlyContinue |
   ForEach-Object {
     Get-Content -LiteralPath $_.FullName -Encoding UTF8 |
@@ -147,6 +167,7 @@ $manifest = [ordered]@{
   toolchain           = 'Mount-DiskImage + robocopy + IMAPI2 (ISO9660+Joliet+UDF102, EFI El Torito)'
   image_name          = $ImageName
   local_user          = $LocalUser
+  password_model      = $passwordModel
   drivers_dir_present = [bool]($DriversDir -and (Test-Path $DriversDir))
   host_os             = $hostOs
   host_firmware       = $firm

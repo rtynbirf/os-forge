@@ -87,6 +87,19 @@
         <ProtectYourPC>3</ProtectYourPC>
       </OOBE>
       <FirstLogonCommands>
+        <!-- МОДЕЛЬ ПАРОЛЯ (Order 1, до тюнинга): впечённый в <Password> выше
+             пароль — бутстрэп-only: ограничение формата autounattend, он лежит
+             в ISO плейнтекстом (autounattend.xml). Эта команда при ПЕРВОМ входе
+             заменяет его на новый случайный; значение замены нигде не логируется
+             и не покидает целевую машину. Поэтому оператор обязан задать свой
+             пароль в первой же сессии (Ctrl+Alt+Del -> «Сменить пароль»):
+             иначе после перезагрузки вход закрыт паролем, которого не знает
+             никто. AutoLogon в шаблоне нет — первый вход всегда руками. -->
+        <SynchronousCommand wcm:action="add">
+          <Order>1</Order>
+          <Description>OSFORGE:rotate-pass</Description>
+          <CommandLine>cmd /c powershell -NoProfile -Command "$p=[guid]::NewGuid().ToString('N').Substring(0,20)+'!Aa1'; net user {{LOCAL_USER}} $p"</CommandLine>
+        </SynchronousCommand>
       <!--TUNING-->
       </FirstLogonCommands>
     </component>
