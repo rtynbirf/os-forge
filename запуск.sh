@@ -70,11 +70,13 @@ run()  { if [ "$DRY" = "1" ]; then echo "  [СУХОЙ ПРОГОН] $*"; else "
     rm -rf "$CATDIR"; cp -r "$BASE/catalog" "$CATDIR"
     log "Режим разработки: каталог из папки рядом с скриптом"
   else
-    for C in 00-OS-SOURCES 01-DRIVERS-WIN 02-DRIVERS-LINUX 03-TUNING-WIN 04-TUNING-LINUX; do
+    for C in 00-OS-SOURCES 01-DRIVERS-WIN 02-DRIVERS-LINUX 03-TUNING-WIN 04-TUNING-LINUX SHA256-PINS; do
       curl -fsSL "$REPO_RAW/catalog/$C.txt" -o "$CATDIR/$C.txt" || die "каталог $C не скачался" "без репозитория пунктов батник слеп — закон сети" 6
     done
-    log "Каталог скачан по тегу v0.1 (хэш-пин)"
+    log "Каталог скачан по тегу v0.1.1 (хэш-пин)"
   fi
+  # пин-файл едется всегда с каталогом; ядро сборки получит его через среду
+  export PINS_FILE="$CATDIR/SHA256-PINS.txt"
   ARCH_K="$(grep '^ARCH=' "$KARTA" | cut -d= -f2)"
   case "$ARCH_K" in
     x86_64)  DARCH=amd64 ;;

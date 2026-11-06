@@ -15,7 +15,7 @@
 #   "current" = актуальная стабильная на МОМЕНТ ЗАПУСКА (требование ТЗ).
 # ПО ДРУГОМУ НЕТ: зеркала и торренты не гарантируют хэш в момент запуска;
 #   сторонние «облегчённые» сборки нефиксируемы и невоспроизводимы.
-ACTIVE|debian-amd64|os=debian,arch=x86_64|https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/|файл debian-*-amd64-netinst.iso + SHA256SUMS
+ACTIVE|debian-amd64|os=debian,arch=x86_64|https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/|файл debian-*-amd64-netinst.iso + SHA256SUMS; пины сверенных образов — catalog/SHA256-PINS.txt
 # PASS|debian-arm64|os=debian,arch=aarch64|https://cdimage.debian.org/debian-cd/current/arm64/iso-cd/|ПОЧЕМУ ПАССИВЕН: активируй на arm-железе; та же механика, другая архитектура
 
 # ── ПУНКТ: Windows 11 x64 через Fido ───────────────────────
