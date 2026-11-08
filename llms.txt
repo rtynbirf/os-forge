@@ -1,0 +1,36 @@
+# os-forge
+> OS-FORGE v0.1.1 — самодостаточный автономный батник: карта среды (железо+ОС по фактам) → решение → сеть (репозиторий пунктов) → сборка актуальной ОС → готовый ISO с манифестом. Windows (cmd+PowerShell) и Linux (bash+xorriso). Ноль прав администратора.
+
+Автоген 2026-11-08 · источник: живой GitHub API (номера и файлы не руками) · владелец rtynbirf · ветка `main`
+
+## Мембрана
+- README.md — для человека (OS-FORGE v0.1.1)
+- AGENTS.md — есть
+- LICENSE — MIT
+- topics: iso-builder, linux-iso, offline-first, russian, supply-chain-security, system-layer, windows-iso, xorriso
+
+## Карта корня
+- .github/
+- .gitignore
+- AGENTS.md
+- CODEOWNERS
+- CODE_OF_CONDUCT.md
+- CONTRIBUTING.md
+- LICENSE
+- PULSE.md
+- README.md
+- RUN.bat
+- SECURITY.md
+- catalog/
+- cores/
+- docs/
+- ЗАПУСК.bat
+- … ещё 1
+
+## CI
+- workflow: self-audit
+
+## Ссылки
+- [GitHub](https://github.com/rtynbirf/os-forge)
+- [README](https://github.com/rtynbirf/os-forge/blob/main/README.md)
+- [raw llms.txt](https://raw.githubusercontent.com/rtynbirf/os-forge/main/llms.txt)
