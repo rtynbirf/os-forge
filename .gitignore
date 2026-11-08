@@ -17,3 +17,7 @@ Desktop.ini
 __pycache__/
 *.pyc
 node_modules/
+
+# Артефакты ковки — вне git (карта в git, территория по карте)
+output/
+forge/state.json

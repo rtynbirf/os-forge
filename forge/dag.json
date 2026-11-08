@@ -1,0 +1,76 @@
+{
+  "schema": "forge-dag/1",
+  "title": "OS-FORGE: ковка как DAG (П44, issue #3)",
+  "canonical_script": "запуск.sh",
+  "build_core": "cores/linux/build-debian.sh",
+  "state_file": "forge/state.json",
+  "output_dir": "output",
+  "idempotency": {
+    "rule": "повтор шага на том же входе не меняет результат: шаг исполняется только если fingerprint входов изменился или выход на диске не сходится с журналом пломб (state.json)",
+    "artifact_hash": "каждый выход пломбируется sha256 в forge/state.json; повторный прогон = 0 исполнений"
+  },
+  "notes": [
+    "cmd — канонический эквивалент стадии существующих скриптов; супервизор dag_run.py не дублирует логику, а ставит шаги на храповик",
+    "выходы с * — glob: пломбируются все совпавшие файлы (сортировка по имени)",
+    "requires — инструменты, без которых шаг честно ОТКАЗ (fail-closed), а не имитация"
+  ],
+  "steps": [
+    {
+      "id": "map",
+      "title": "КАРТА: распознавание среды по фактам",
+      "depends_on": [],
+      "cmd": "bash запуск.sh карта",
+      "inputs": ["запуск.sh"],
+      "outputs": ["output/КАРТА.txt"],
+      "requires": ["bash"]
+    },
+    {
+      "id": "decision",
+      "title": "РЕШЕНИЕ: ветка алгоритма и активный пункт каталога",
+      "depends_on": ["map"],
+      "cmd": "bash запуск.sh решение",
+      "inputs": ["запуск.sh", "catalog/00-OS-SOURCES.txt", "catalog/SHA256-PINS.txt"],
+      "outputs": ["output/ЖУРНАЛ.txt"],
+      "requires": ["bash", "curl"]
+    },
+    {
+      "id": "render-preseed",
+      "title": "РЕНДЕР: preseed.cfg из шаблона по карте и пунктам",
+      "depends_on": ["decision"],
+      "cmd": "bash запуск.sh сборка (стадия рендера внутри)",
+      "inputs": ["cores/linux/preseed.cfg.tmpl", "catalog/02-DRIVERS-LINUX.txt",
+                 "catalog/04-TUNING-LINUX.txt", "output/КАРТА.txt"],
+      "outputs": ["output/preseed.cfg"],
+      "requires": ["bash", "curl"]
+    },
+    {
+      "id": "fetch-iso",
+      "title": "СЕТЬ: добыча актуального netinst + сверка SHA256SUMS и пина",
+      "depends_on": ["decision"],
+      "cmd": "DRY=0 bash cores/linux/build-debian.sh (стадия добычи внутри)",
+      "inputs": ["catalog/SHA256-PINS.txt"],
+      "outputs": ["output/dl/*.iso"],
+      "requires": ["bash", "curl"]
+    },
+    {
+      "id": "build-iso",
+      "title": "СБОРКА: вживление preseed в оба загрузчика, гибрид BIOS+UEFI",
+      "depends_on": ["render-preseed", "fetch-iso"],
+      "cmd": "DRY=0 bash cores/linux/build-debian.sh <ISO_URL> output/preseed.cfg output/OSFORGE_debian_amd64.iso output/work",
+      "inputs": ["cores/linux/build-debian.sh", "output/preseed.cfg"],
+      "outputs": ["output/OSFORGE_debian_amd64.iso",
+                  "output/OSFORGE_debian_amd64.iso.МАНИФЕСТ.json"],
+      "requires": ["bash", "xorriso", "isolinux"]
+    },
+    {
+      "id": "smoke-boot",
+      "title": "СМОК: QEMU-загрузка образа, контракт «boot до приглашения ≤ 120 с»",
+      "depends_on": ["build-iso"],
+      "cmd": "bash forge/smoke_boot.sh output/OSFORGE_debian_amd64.iso",
+      "inputs": ["forge/smoke_boot.sh", "output/OSFORGE_debian_amd64.iso"],
+      "outputs": ["output/СМОК-ОТЧЁТ.txt"],
+      "requires": ["bash", "qemu-system-x86_64"],
+      "contract": "boot до приглашения ≤ 120 секунд по серийной консоли; таймаут = красный (см. forge/СМОК-ТЕСТ.md)"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+name: FORGE-DAG
+
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  dag:
+    name: Ковка как DAG — selftest + план
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Идемпотентность-храповик (негативы + повтор = 0 изменений)
+        run: python3 forge/dag_run.py selftest
+      - name: План DAG по настоящему манифесту forge
+        run: python3 forge/dag_run.py plan
+      - name: Честный отказ смок-теста без qemu (fail-closed, не имитация)
+        run: |
+          set +e
+          bash forge/smoke_boot.sh forge/dag.json
+          rc=$?
+          set -e
+          # 3 = qemu отсутствует (честный отказ), 2 = вход не ISO (qemu есть,
+          # но смокить нечего) — оба честные; 0/1 на не-ISO невозможны и = баг
+          case "$rc" in
+            2|3) echo "честный отказ подтверждён: rc=$rc";;
+            *) echo "неожиданный rc=$rc — fail-closed нарушен"; exit 1;;
+          esac
