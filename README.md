@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="banner.png" alt="os-forge — Самодостаточный автономный батник" width="100%">
+</div>
+
 # OS-FORGE v0.1.1
 
 <p align="center"><img src=".github/social-preview.png" alt="os-forge" width="100%"></p>
