@@ -2,6 +2,15 @@
   <img src="banner.png" alt="os-forge — Самодостаточный автономный батник" width="100%">
 </div>
 
+<!--ФОРЖ:МУЗА:НАЧАЛО-->
+<div align="center">
+  <img src="repo-muse.svg" width="100%" alt="Муза os-forge: картина кузни ПОЛИМАТ, раунд 9" />
+  <br/>
+  <img src="forge-divider.svg" width="62%" alt="разделитель кузни ПОЛИМАТ" />
+</div>
+<!--ФОРЖ:МУЗА:КОНЕЦ-->
+
+
 # OS-FORGE v0.1.1
 
 <p align="center"><img src=".github/social-preview.png" alt="os-forge" width="100%"></p>
@@ -142,3 +151,10 @@ MIT — см. LICENSE.
 
 Англоязычный алиас запуска: `RUN.bat` (вызывает ЗАПУСК.bat, для окружений,
 где кириллические имена файлов ломают автоматизацию).
+
+<!--ФОРЖ:ПОДВАЛ-->
+---
+
+<div align="center">
+  <sub>◆ картина и штандарт — ручная ковка <a href="https://github.com/rtynbirf">КУЗНИ ПОЛИМАТ</a> · ЧЕЛОВЕК=АККАУНТ=PID1 ◆</sub>
+</div>
