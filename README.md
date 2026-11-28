@@ -25,6 +25,18 @@
 # os-forge
 
 <div align="center">
+
+<a href="https://github.com/rtynbirf/os-forge"><img src="banner.png" width="100%" alt="os-forge — штандарт мастерской в каноне ORNAMENTAL MYTHO-REALISM"></a>
+
+</div>
+
+
+
+
+
+# os-forge
+
+<div align="center">
   <img src="banner.png" alt="os-forge — Самодостаточный автономный батник" width="100%">
 </div>
 
