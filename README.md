@@ -1,24 +1,36 @@
 <div align="center">
-  <img src="banner.png" alt="os-forge — Самодостаточный автономный батник" width="100%">
+
+<a href="https://github.com/rtynbirf/os-forge"><img src="banner.png" width="100%" alt="os-forge — штандарт мастерской в каноне ORNAMENTAL MYTHO-REALISM"></a>
+
 </div>
 
 <!--ФОРЖ:МУЗА:НАЧАЛО-->
 <div align="center">
-  <img src="repo-muse.svg" width="100%" alt="Муза os-forge: мастерская КУЗНЯ, кузня ПОЛИМАТ, раунд 12 · REVE=РЕВО" />
+  <img src="https://cdn.jsdelivr.net/gh/rtynbirf/os-forge@main/repo-muse.svg" width="100%" alt="Муза os-forge: мастерская КУЗНЯ, кузня ПОЛИМАТ, раунд 12 · REVE=РЕВО" />
   <br/>
-  <img src="forge-divider.svg" width="62%" alt="делитель мастерской КУЗНЯ" />
+  <img src="https://cdn.jsdelivr.net/gh/rtynbirf/os-forge@main/forge-divider.svg" width="62%" alt="делитель мастерской КУЗНЯ" />
 </div>
 <!--ФОРЖ:МУЗА:КОНЕЦ-->
 
 <!--ФОРЖ:ПАСПОРТ:НАЧАЛО-->
 <div align="center">
-  <img src="revo-page.svg" width="100%" alt="РЕВО-паспорт страницы os-forge: строение файлов, лексикон, числа — по фактическому контенту" />
+  <img src="revo-page.svg" width="100%" alt="РЕВО-паспорт страницы os-forge №37 в каноне ORNAMENTAL MYTHO-REALISM: орнаментальная решётка, медальон-миф, строение файлов, лексикон — по фактическому контенту" />
 </div>
 
 | ФАЙЛОВ | ПАПОК | КОММИТОВ | ОБНОВЛЕНО | РЕЛИЗОВ |
 |---:|---:|---:|---|---:|
-| 54 | 9 | 44 | 2026-11-16 | 1 |
+| 64 | 11 | 1 | 2026-11-28 | 1 |
 <!--ФОРЖ:ПАСПОРТ:КОНЕЦ-->
+
+# os-forge
+
+<div align="center">
+  <img src="banner.png" alt="os-forge — Самодостаточный автономный батник" width="100%">
+</div>
+
+
+
+
 
 
 
